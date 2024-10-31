@@ -13,18 +13,21 @@ public class MyLinkedList<E> implements IList<E> {
 	public Iterator<E> iterator() {
 
 		return new Iterator<E>() {
-			int counter = 0;
+			Node<E> node = first;
+			
 
 			@Override
 			public boolean hasNext() {
 
-				return counter < size;
+				return node !=null ;
 			}
 
 			@Override
 			public E next() {
+				E data = node.data;
+				node = node.next;
 
-				return get(counter++);
+				return data;
 			}
 		};
 	}
@@ -101,48 +104,101 @@ public class MyLinkedList<E> implements IList<E> {
 
 	@Override
 	public int indexOf(Object o) {
+		// My decision
+//		int index = 0;
+//		Node<E> node = first;
+//		while (node != null) {
+//			if (o.equals(node.data)) {
+//				return index;
+//			}
+//			node = node.next;
+//			index++;
+//		}
+//		return -1;
+		
+		// Decision from Andrey
 		int index = 0;
-		Node<E> node = first;
-		while (node != null) {
-			if (o.equals(node.data)) {
-				return index;
+		if(o!=null) {
+			for (Node<E>  node = first;  node!=null; node = node.next, index++) {
+				if(o.equals(node.data)) {
+					return index;
+				}
 			}
-			node = node.next;
-			index++;
+		} else {
+			for (Node<E>  node = first;  node!=null; node = node.next, index++) {
+				if(o==node.data) {
+					return index;
+				}
+			}
 		}
 		return -1;
 	}
 
 	@Override
 	public int lastIndexOf(Object o) {
-		int index = size - 1;
-		Node<E> node = last;
-		while (node != null) {
-			if (o.equals(node.data)) {
-				return index;
+		// My decision
+//		int index = size - 1;
+//		Node<E> node = last;
+//		while (node != null) {
+//			if (o.equals(node.data)) {
+//				return index;
+//			}
+//			node = node.prev;
+//			index--;
+//		}
+//		return -1;
+
+		// Decision from Andrey
+		int index = size-1;
+		if(o!=null) {
+			for (Node<E>  node = last;  node!=null; node = node.prev, index--) {
+				if(o.equals(node.data)) {
+					return index;
+				}
 			}
-			node = node.prev;
-			index--;
+		} else {
+			for (Node<E>  node = last;  node!=null; node = node.prev, index--) {
+				if(o==node.data) {
+					return index;
+				}
+			}
 		}
 		return -1;
 	}
 
 	@Override
 	public E remove(int index) {
-		checkIndex(index);
 		Node<E> victim = getNodeByIndex(index);
-		if (victim.prev != null) {
+		return unlink(victim);
+	}
 
+	private E unlink(Node<E> victim) {
+		E res = victim.data;
+		Node <E> prev = victim.prev;
+		Node <E> next = victim.next;
+		if(prev != null) {
+			prev.next = next;
+			victim.prev = null;
+		} else {
+			first = next;
 		}
+		if(next != null) {
+			prev.next = prev;
+			victim.next = null;
+		} else {
+			last = next;
+		}
+		victim.data = null;
 		size--;
-
-		return null;
+		return res;
 	}
 
 	@Override
 	public E set(int index, E element) {
-		// TODO Auto-generated method stub
-		return null;
+		Node <E> victim = getNodeByIndex(index);
+		E res = victim.data;
+		victim.data = element;
+		return res;
 	}
 
 }
